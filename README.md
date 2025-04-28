@@ -15,6 +15,13 @@
 ## 사용된 주요 기술
 - **Epoll:** 클라이언트 소켓파일을 효율적으로 다루기 위하여 사용하였습니다.
 
+## elevator event protocol
+- **MessageType (8bit):** message가 어떤 타입인지 (MSG_START, MSG_REQUEST, MSG_STATUS) 알려주는 비트
+- **Direction (8bit):** 엘레베이터가 버튼 조작 (UP, DOWN, STAY)
+- **src_floor (8bit):** 요청을 보낸 층
+- **dst_floor (8bit):** 가고자 하는 층
+- **timestamp (32bit):** 버튼을 누른 시점(요청을 보낸 시점)을 초단위로 계산.
+
 ## 컴파일 & 실행 방법 
 - **클라이언트 컴파일:** g++ -std=c++17 -Iinclude src/client.cpp -o clientTest
 - **서버 컴파일:** g++ -std=c++17 -Iinclude src/main.cpp src/epoll_server.cpp src/elevator.cpp -o serverc
