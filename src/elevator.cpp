@@ -21,6 +21,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <climits>
+#include <ctime>
 
 using std::cout;
 using std::endl;
@@ -41,7 +42,8 @@ using std::priority_queue;
 // * 작 성 자: KJH
 // * 작성일자: 2025. 04. 25
 // ********************************************************************
-Elevator::Elevator() : current_floor(1), direction(STAY), is_boarding(false) {}
+Elevator::Elevator() : current_floor(1), direction(STAY), is_boarding(false)
+		       , total_waiting_time(0), total_passengers(0), avg_waiting_time(0.0) {}
 
 
 // ********************************************************************
@@ -55,6 +57,8 @@ void Elevator::addRequest(const ElevatorMessage& msg) {
 	// 엘레베이터 버튼을 누른다.
 	cout << msg.timestamp << " : " << int(msg.dst_floor) << endl;
 	floor_waiting[msg.src_floor].push(msg);
+
+	this->total_passengers++;
 }
 
 // ********************************************************************
@@ -94,6 +98,9 @@ void Elevator::moveAndProcess(set<int>& clients) {
 			while (!waiting.empty()) {
 				const auto msg = waiting.top();
 				waiting.pop();
+
+				calc_waiting_time(msg.timestamp);	//total waiting time 계산
+
 				if (msg.dir == direction || direction == STAY) {
                        		         cout << msg.timestamp << "승차 : " << int(msg.src_floor) << " >> " << int(msg.dst_floor) << endl;
                        		         elevator_passengers.push_back(msg.dst_floor);
@@ -176,4 +183,27 @@ int Elevator::next_waiting_floor() {
 
 	return ret;
 }
+// ********************************************************************
+// * 함 수 명: calc_waiting_time
+// * 설    명: 엘레베이터를 기다린 시간을 계산한다.
+// * 작 성 자: KJH
+// * 작성일자: 2025. 05. 07
+// ********************************************************************
+void Elevator::calc_waiting_time(const uint32_t start) {
+	this->total_waiting_time += static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch() / std::chrono::seconds(1)) - start;
 
+}
+// ********************************************************************
+// * 함 수 명: print_avg_waiting_time
+// * 설    명: 엘레베이터를 기다린 평균 시간을 출력한다.
+// * 작 성 자: KJH
+// * 작성일자: 2025. 05. 07
+// ********************************************************************
+void Elevator::print_avg_waiting_time() {
+	avg_waiting_time = (double)total_waiting_time / total_passengers;
+	
+	cout << "==================== 사후 검토 ===========================" << endl;
+	cout << "총 엘레베이터를 이용한 승객   : " << total_passengers << endl;
+	cout << "평균 엘레베이터를 기다린 시간 : " << avg_waiting_time  << endl;
+	cout << "==========================================================" << endl;
+}

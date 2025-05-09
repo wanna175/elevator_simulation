@@ -75,6 +75,23 @@ void EpollServer::run() {
 	elevator_thread.join();
 }
 
+
+// ********************************************************************
+// * 함 수 명: exit
+// * 설    명: server를 종료한다.
+// * 작 성 자: KJH
+// * 작성일자: 2025. 05. 07
+// ********************************************************************
+void EpollServer::exit() {
+	elevator.print_avg_waiting_time();
+	for(auto fd : client_fds) {
+		cout << "클라이언트 "<< fd << "와 연결을 종료합니다." << endl;
+		close(fd);
+	}
+} 
+
+
+
 // ********************************************************************
 // * 함 수 명: setup_server_socket
 // * 설    명: server socket을 설정한다..
@@ -94,6 +111,7 @@ int EpollServer::setup_server_socket(int port) {
         return sock;
 
 }
+
 
 // ********************************************************************
 // * 함 수 명: send_start_signal
@@ -118,7 +136,7 @@ void EpollServer::send_start_signal(int fd) {
 void EpollServer::handle_client(int fd) {
 	ElevatorMessage msg{};
 	int len = recv(fd, &msg, sizeof(msg), 0);
-	//읽을 것이 없다면 연결해제하고 리턴??
+	//socket error라면 
 	if (len <= 0) {
 		close(fd);
 		client_fds.erase(fd);

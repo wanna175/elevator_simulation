@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 		std::cout << "요청 전송 : 층 " << int(req.src_floor) << " → " << int(req.dst_floor) << std::endl;
 		req.set_timestamp();
 		send(sock, &req, sizeof(req), 0);
-		sleep(rand() % 3 + 1); //1 ~ 3 초 대기
+		sleep(rand() % 3 + 3); //3 ~ 6 초 대기
 	}
     }
     status_thread.join();

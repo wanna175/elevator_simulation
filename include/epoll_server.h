@@ -25,6 +25,7 @@ private:
 public:
 	EpollServer(int port);
 	void run();
+	void exit();
 private:
 	int	setup_server_socket(int port);
 	void 	send_start_signal(int fd);

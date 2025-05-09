@@ -36,13 +36,19 @@ private:
 	vector<int> 					elevator_passengers;	//현재 엘베안에 타고있는 사람(목적층)
 	map<int, priority_queue<ElevatorMessage>> 	floor_waiting;		//현재 엘베를 기다리고 있는 사람
 	mutex 						queue_mutex;
-
+	
+	//사후처리를 위한 변수들
+	int 						total_waiting_time;	//총 기다린 시간 (time stamp)
+	int 						total_passengers;	//총 엘레베이터를 이용한 승객
+	double						avg_waiting_time;	//기다린 평균 시간
 public:
 	Elevator();
 	void addRequest(const ElevatorMessage& msg);
 	void moveAndProcess(set<int>& clients);
+	void print_avg_waiting_time();
 private:
 	bool is_empty_waiting();
 	int  next_waiting_floor();
+	void calc_waiting_time(const uint32_t start);
 
 };
